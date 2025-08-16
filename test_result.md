@@ -101,3 +101,94 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+---
+user_problem_statement: "Show the main Maybe app working end-to-end. Frontend should load, call backend via REACT_APP_BACKEND_URL, list status entries, and allow adding a status. I (main agent) should run both backend and frontend automated tests and also provide an app preview screenshot."
+backend:
+  - task: "GET /api returns Hello World"
+    implemented: true
+    working: NA
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: NA
+        agent: "main"
+        comment: "Scaffolded endpoint in FastAPI. Ready for verification via testing agent."
+  - task: "GET /api/health returns {status: 'ok'} and DB ping works"
+    implemented: true
+    working: NA
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: NA
+        agent: "main"
+        comment: "Health route added with Mongo ping."
+  - task: "POST /api/status creates status with UUID id and timestamp"
+    implemented: true
+    working: NA
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: NA
+        agent: "main"
+        comment: "Creates entry with UUID as _id in Mongo; returns id to client."
+  - task: "GET /api/status lists statuses with id, client_name, timestamp"
+    implemented: true
+    working: NA
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: NA
+        agent: "main"
+        comment: "Lists from Mongo, maps _id->id as string."
+frontend:
+  - task: "Home page loads and displays Hello/Health and status list"
+    implemented: true
+    working: NA
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: NA
+        agent: "main"
+        comment: "Home component fetches hello/health/list on mount using env-based API."
+  - task: "Create Status form submits and list refreshes"
+    implemented: true
+    working: NA
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: NA
+        agent: "main"
+        comment: "Form posts client_name, then reloads list."
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "GET /api"
+    - "GET /api/health"
+    - "POST /api/status"
+    - "GET /api/status"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Please test the backend endpoints using the public base URL from frontend/.env (REACT_APP_BACKEND_URL). After backend passes, I will trigger automated UI tests and also provide a preview screenshot for the user."
+---
