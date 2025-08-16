@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -35,22 +35,41 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
+
+@api_router.get("/", tags=["health"])
 async def root():
     return {"message": "Hello World"}
 
-@api_router.post("/status", response_model=StatusCheck)
+@api_router.get("/health", tags=["health"])
+async def health_check():
+    try:
+        # quick ping: run a simple command to verify connectivity
+        _ = await db.command('ping')
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/status", response_model=StatusCheck, tags=["status"]) 
 async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
+    status_obj = StatusCheck(**input.dict())
+    # Store with explicit _id to remain UUID-based and JSON-friendly
+    payload = status_obj.dict()
+    payload["_id"] = payload.pop("id")
+    await db.status_checks.insert_one(payload)
+    # Return using id field to the client
     return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
+@api_router.get("/status", response_model=List[StatusCheck], tags=["status"]) 
 async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
+    result: List[StatusCheck] = []
+    for item in status_checks:
+        # Map _id back to id for Pydantic model
+        item = dict(item)
+        if "_id" in item:
+            item["id"] = str(item.pop("_id"))
+        result.append(StatusCheck(**item))
+    return result
 
 # Include the router in the main app
 app.include_router(api_router)
