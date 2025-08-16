@@ -107,48 +107,60 @@ user_problem_statement: "Show the main Maybe app working end-to-end. Frontend sh
 backend:
   - task: "GET /api returns Hello World"
     implemented: true
-    working: NA
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: NA
         agent: "main"
         comment: "Scaffolded endpoint in FastAPI. Ready for verification via testing agent."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - GET /api endpoint returns 200 status with correct JSON response {message: 'Hello World'}. Tested using production URL https://fullstack-docs.preview.emergentagent.com/api"
   - task: "GET /api/health returns {status: 'ok'} and DB ping works"
     implemented: true
-    working: NA
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: NA
         agent: "main"
         comment: "Health route added with Mongo ping."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - GET /api/health endpoint returns 200 status with {status: 'ok'}. MongoDB connection and ping working correctly."
   - task: "POST /api/status creates status with UUID id and timestamp"
     implemented: true
-    working: NA
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: NA
         agent: "main"
         comment: "Creates entry with UUID as _id in Mongo; returns id to client."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - POST /api/status creates status entry with valid UUID id (not Mongo ObjectId), correct client_name, and ISO8601 timestamp. Data persists correctly in MongoDB."
   - task: "GET /api/status lists statuses with id, client_name, timestamp"
     implemented: true
-    working: NA
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: NA
         agent: "main"
         comment: "Lists from Mongo, maps _id->id as string."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - GET /api/status returns array of status entries with proper UUID ids, client_names, and timestamps. Created items are correctly retrieved from the list."
 frontend:
   - task: "Home page loads and displays Hello/Health and status list"
     implemented: true
