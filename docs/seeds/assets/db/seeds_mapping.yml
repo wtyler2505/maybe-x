@@ -1,0 +1,21 @@
+models:
+  # user: User
+  # account: Account
+  # transaction: Transaction
+columns:
+  transaction:
+    # date: posted_on
+    # amount: amount_cents
+    # currency: currency_code
+    # counterparty: merchant
+    # memo: note
+    # fitid: external_id
+    # account_fk: ledger_account_id
+    # user_fk: user_id
+defaults:
+  user:
+    email: demo@example.com
+    password: password
+  account:
+    name: Checking
+    currency: USD
