@@ -240,42 +240,28 @@ def check_cors_headers(base_url):
     print("\n🔍 Checking CORS headers...")
     
     try:
-        # Test with OPTIONS request
+        # Test with GET request including Origin header (simulates browser request)
         url = f"{base_url}/api"
-        response = requests.options(url, timeout=10)
+        headers = {"Origin": "https://example.com"}
+        response = requests.get(url, headers=headers, timeout=10)
         
-        headers = response.headers
+        print(f"Status Code: {response.status_code}")
+        print(f"Response Headers: {dict(response.headers)}")
+        
         cors_headers = {
-            'Access-Control-Allow-Origin': headers.get('Access-Control-Allow-Origin'),
-            'Access-Control-Allow-Methods': headers.get('Access-Control-Allow-Methods'),
-            'Access-Control-Allow-Headers': headers.get('Access-Control-Allow-Headers'),
+            'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+            'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials'),
         }
         
         print(f"CORS Headers: {cors_headers}")
         
-        if any(cors_headers.values()):
+        # Check for Access-Control-Allow-Origin header
+        if cors_headers['Access-Control-Allow-Origin']:
             print("✅ CORS headers are present")
             return True
         else:
-            print("⚠️ CORS headers not found in OPTIONS response, checking GET response...")
-            
-            # Check GET response for CORS headers
-            response = requests.get(url, timeout=10)
-            headers = response.headers
-            cors_headers = {
-                'Access-Control-Allow-Origin': headers.get('Access-Control-Allow-Origin'),
-                'Access-Control-Allow-Methods': headers.get('Access-Control-Allow-Methods'),
-                'Access-Control-Allow-Headers': headers.get('Access-Control-Allow-Headers'),
-            }
-            
-            print(f"CORS Headers in GET: {cors_headers}")
-            
-            if any(cors_headers.values()):
-                print("✅ CORS headers are present in GET response")
-                return True
-            else:
-                print("❌ CORS headers not found")
-                return False
+            print("❌ CORS headers not found")
+            return False
             
     except requests.exceptions.RequestException as e:
         print(f"❌ CORS check - FAILED: Request error - {e}")
