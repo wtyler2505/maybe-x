@@ -164,7 +164,7 @@ backend:
 frontend:
   - task: "Home page loads and displays Hello/Health and status list"
     implemented: true
-    working: NA
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
